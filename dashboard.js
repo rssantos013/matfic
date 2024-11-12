@@ -1,3 +1,22 @@
+// Bloqueio de qualquer redirecionamento (evitar recarregamento da página)
+(function() {
+    const originalLocation = window.location;
+
+    // Interceptar alterações em window.location.href
+    Object.defineProperty(window, 'location', {
+        value: new Proxy(window.location, {
+            set: (target, prop, value) => {
+                if (prop === 'href') {
+                    console.log('Bloqueando redirecionamento para:', value);
+                    return true; // Bloqueia a alteração da URL
+                }
+                return Reflect.set(...arguments);
+            }
+        })
+    });
+})();
+
+// Funções principais
 const getTokenFromQuery = () => {
     const urlParams = new URLSearchParams(window.location.search)
     return urlParams.get('token')
@@ -29,11 +48,6 @@ const displayAssignments = (data) => {
     const assignmentsDiv = document.getElementById('assignments')
     assignmentsDiv.innerHTML = ''
 
-    // const mainTitle = document.createElement('div')
-    // mainTitle.className = 'assignment-title'
-    // mainTitle.innerText = data.assignment
-    // assignmentsDiv.appendChild(mainTitle)
-
     const lessonBox = document.createElement('div')
     lessonBox.className = 'lesson-box'
     lessonBox.setAttribute('data-id', data.id)
@@ -49,7 +63,6 @@ const displayAssignments = (data) => {
     const autoAnswerButton = document.createElement('button')
     autoAnswerButton.innerText = 'Auto Resposta'
     autoAnswerButton.addEventListener('click', async () => {
-        // disable buttons
         autoAnswerButton.disabled = true
 
         const notificationProgress = document.createElement('div')
@@ -59,8 +72,8 @@ const displayAssignments = (data) => {
         notificationProgress.style.display = 'block'
 
         const autoAnswerResponse = await fetch("/api/matific-complete", {
-                method: 'POST',
-                headers: {
+            method: 'POST',
+            headers: {
                 'accept': '*/*',
                 'accept-language': 'en-US,en',
                 'cache-control': 'no-cache',
@@ -104,6 +117,7 @@ const displayAssignments = (data) => {
 
     autoAnswerButton.disabled = false
 }
+
 const token = getTokenFromQuery()
 if (token) {
     saveTokenToLocalStorage(token)
@@ -111,7 +125,9 @@ if (token) {
 
 const storedToken = getTokenFromLocalStorage()
 if (!storedToken) {
-    window.location.href = 'index.html'
+    console.log('Token não encontrado, bloqueando redirecionamento.');
+    // Ao invés de redirecionar, mostramos uma mensagem
+    alert('Token inválido ou ausente. Não podemos redirecionar a página.');
 } else {
     greetUser(storedToken)
 }
@@ -132,5 +148,7 @@ document.getElementById('profileButton').addEventListener('click', function() {
 
 document.getElementById('logoutButton').addEventListener('click', function() {
     localStorage.removeItem('token')
-    window.location.href = 'index.html'
+    console.log('Token removido, mas sem redirecionamento.');
+    // Não redirecionamos mais, apenas mostramos um aviso
+    alert('Sessão finalizada. A página não será redirecionada.');
 })
