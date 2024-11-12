@@ -19,16 +19,20 @@ const removeMatificDataFromLocalStorage = () => {
     localStorage.removeItem('matificData')
 }
 
-// Removemos a função greetUser que usava o token Discord
 const greetUser = (token) => {
-    // Aqui você pode exibir uma mensagem de boas-vindas padrão sem o uso do Discord
     const payload = JSON.parse(atob(token.split('.')[1]))
     document.getElementById('username').innerText = payload.username
+    document.getElementById('profilePicture').src = `https://cdn.discordapp.com/avatars/${payload.id}/${payload.avatar}.png`
 }
 
 const displayAssignments = (data) => {
     const assignmentsDiv = document.getElementById('assignments')
     assignmentsDiv.innerHTML = ''
+
+    // const mainTitle = document.createElement('div')
+    // mainTitle.className = 'assignment-title'
+    // mainTitle.innerText = data.assignment
+    // assignmentsDiv.appendChild(mainTitle)
 
     const lessonBox = document.createElement('div')
     lessonBox.className = 'lesson-box'
@@ -69,7 +73,7 @@ const displayAssignments = (data) => {
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
                 'sec-gpc': '1',
-                'authorization': `Bearer ${token}`  // O token aqui é mantido, pois é necessário para a API Matific
+                'authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data),
             mode: 'cors',
@@ -100,7 +104,6 @@ const displayAssignments = (data) => {
 
     autoAnswerButton.disabled = false
 }
-
 const token = getTokenFromQuery()
 if (token) {
     saveTokenToLocalStorage(token)
@@ -110,7 +113,7 @@ const storedToken = getTokenFromLocalStorage()
 if (!storedToken) {
     window.location.href = 'index.html'
 } else {
-    greetUser(storedToken)  // Aqui a saudação pode ser genérica
+    greetUser(storedToken)
 }
 
 const matificData = getMatificDataFromLocalStorage()
