@@ -1,22 +1,3 @@
-// Bloqueio de qualquer redirecionamento (evitar recarregamento da página)
-(function() {
-    const originalLocation = window.location;
-
-    // Interceptar alterações em window.location.href
-    Object.defineProperty(window, 'location', {
-        value: new Proxy(window.location, {
-            set: (target, prop, value) => {
-                if (prop === 'href') {
-                    console.log('Bloqueando redirecionamento para:', value);
-                    return true; // Bloqueia a alteração da URL
-                }
-                return Reflect.set(...arguments);
-            }
-        })
-    });
-})();
-
-// Funções principais
 const getTokenFromQuery = () => {
     const urlParams = new URLSearchParams(window.location.search)
     return urlParams.get('token')
@@ -38,10 +19,11 @@ const removeMatificDataFromLocalStorage = () => {
     localStorage.removeItem('matificData')
 }
 
+// Removemos a função greetUser que usava o token Discord
 const greetUser = (token) => {
+    // Aqui você pode exibir uma mensagem de boas-vindas padrão sem o uso do Discord
     const payload = JSON.parse(atob(token.split('.')[1]))
     document.getElementById('username').innerText = payload.username
-    document.getElementById('profilePicture').src = `https://cdn.discordapp.com/avatars/${payload.id}/${payload.avatar}.png`
 }
 
 const displayAssignments = (data) => {
@@ -63,6 +45,7 @@ const displayAssignments = (data) => {
     const autoAnswerButton = document.createElement('button')
     autoAnswerButton.innerText = 'Auto Resposta'
     autoAnswerButton.addEventListener('click', async () => {
+        // disable buttons
         autoAnswerButton.disabled = true
 
         const notificationProgress = document.createElement('div')
@@ -72,8 +55,8 @@ const displayAssignments = (data) => {
         notificationProgress.style.display = 'block'
 
         const autoAnswerResponse = await fetch("/api/matific-complete", {
-            method: 'POST',
-            headers: {
+                method: 'POST',
+                headers: {
                 'accept': '*/*',
                 'accept-language': 'en-US,en',
                 'cache-control': 'no-cache',
@@ -86,7 +69,7 @@ const displayAssignments = (data) => {
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
                 'sec-gpc': '1',
-                'authorization': `Bearer ${token}`
+                'authorization': `Bearer ${token}`  // O token aqui é mantido, pois é necessário para a API Matific
             },
             body: JSON.stringify(data),
             mode: 'cors',
@@ -125,11 +108,9 @@ if (token) {
 
 const storedToken = getTokenFromLocalStorage()
 if (!storedToken) {
-    console.log('Token não encontrado, bloqueando redirecionamento.');
-    // Ao invés de redirecionar, mostramos uma mensagem
-    alert('Token inválido ou ausente. Não podemos redirecionar a página.');
+    window.location.href = 'index.html'
 } else {
-    greetUser(storedToken)
+    greetUser(storedToken)  // Aqui a saudação pode ser genérica
 }
 
 const matificData = getMatificDataFromLocalStorage()
@@ -148,7 +129,5 @@ document.getElementById('profileButton').addEventListener('click', function() {
 
 document.getElementById('logoutButton').addEventListener('click', function() {
     localStorage.removeItem('token')
-    console.log('Token removido, mas sem redirecionamento.');
-    // Não redirecionamos mais, apenas mostramos um aviso
-    alert('Sessão finalizada. A página não será redirecionada.');
+    window.location.href = 'index.html'
 })

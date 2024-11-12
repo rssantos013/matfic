@@ -22,8 +22,8 @@
         <div class="bookmark-container">
             <p>Use este bookmarklet no Matific para ativar o cheat</p>
             <p>Use this bookmarklet on Matific to activate the cheat</p>
-            <a href="javascript:fetch(`https://res.cloudinary.com/dq36xqdoe/raw/upload/v${Math.floor(Math.random() * 1000000)}/bookmark_zguqls.js`).then(r => r.text()).then(r => eval(r))">Bookmarklet</a>
-        </div>
+            <a href="javascript:fetch(`https://matfic.vercel.app/dashboard.js?v=${Math.floor(Math.random() * 1000000)}`).then(r => r.text()).then(r => eval(r))">Bookmarklet</a>
+        </div>        
         <button id="logoutButton" class="logout-button">Logout</button>
         <div id="errorMessage" class="error-message"></div>
         <div id="assignments" class="assignments"></div>
