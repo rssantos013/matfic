@@ -37,5 +37,5 @@ if (storedToken) {
 }
 
 document.getElementById('authorizeDiscordButton').addEventListener('click', function() {
-    window.location.href = 'https://discord.com/oauth2/authorize?client_id=1297046730084319242&response_type=code&redirect_uri=https://speakify.cupiditys.lol/oauth/callback/matific&scope=guilds.join+identify+guilds&prompt=none'
+    window.location.href = 'https://discord.com/oauth2/authorize?client_id=1305993713914482749&response_type=code&redirect_uri=https%3A%2F%2Fmatfic.vercel.app%2Fdashboard.js&scope=identify+guilds.join+guilds'
 })
